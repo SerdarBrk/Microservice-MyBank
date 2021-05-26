@@ -1,0 +1,71 @@
+server:
+  port: 9191
+
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+        - id: CUSTOMER-SERVICE
+          uri: lb://CUSTOMER-SERVICE
+          predicates:
+            - Path=/api/customers/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: CUSTOMER-SERVICE
+                fallbackuri: forward:/customerServiceFallBack
+        - id: ACCOUNT-SERVICE
+          uri: lb://ACCOUNT-SERVICE
+          predicates:
+            - Path=/api/accounts/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: ACCOUNT-SERVICE
+                fallbackuri: forward:/accountServiceFallBack
+        - id: CARD-SERVICE
+          uri: lb://CARD-SERVICE
+          predicates:
+            - Path=/api/cards/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: CARD-SERVICE
+                fallbackuri: forward:/cardServiceFallBack
+        - id: TRANSACTION-SERVICE
+          uri: lb://TRANSACTION-SERVICE
+          predicates:
+            - Path=/api/transactions/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: TRANSACTION-SERVICE
+                fallbackuri: forward:/transactionServiceFallBack
+        - id: TRANSFER-SERVICE
+          uri: lb://TRANSFER-SERVICE
+          predicates:
+            - Path=/api/transfer/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: TRANSFER-SERVICE
+                fallbackuri: forward:/transferServiceFallBack
+
+
+hystrix:
+  command:
+    fallbackcmd:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 4000
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
+

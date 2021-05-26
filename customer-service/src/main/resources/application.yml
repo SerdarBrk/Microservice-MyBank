@@ -1,0 +1,9 @@
+server:
+  port: 9001
+
+spring:
+  application:
+
+    name: CUSTOMER-SERVICE
+  zipkin:
+    base-url: http://127.0.0.1:9411/

@@ -1,0 +1,8 @@
+server:
+  port: 9004
+
+spring:
+  application:
+    name: TRANSACTION-SERVICE
+  zipkin:
+    base-url: http://127.0.0.1:9411/
