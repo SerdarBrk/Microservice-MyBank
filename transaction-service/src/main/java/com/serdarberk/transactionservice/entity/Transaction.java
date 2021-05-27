@@ -21,6 +21,7 @@ public class Transaction {
     private int id;
 
     private UUID performedId;
+    @Enumerated(value = EnumType.STRING)
     private TransactionType transactionType;
     private String explanation;
     private LocalDate transactionDate;

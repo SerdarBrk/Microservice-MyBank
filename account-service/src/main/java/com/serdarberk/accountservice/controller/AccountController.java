@@ -69,7 +69,13 @@ public class AccountController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteAll(@RequestParam("customerId") UUID customerId){
         log.info("Inside deleteAll of AccountController");
+
         accountService.deleteAll(customerId);
+    }
+
+    @GetMapping("/hasAccount")
+    public ObjectNode hasCustomer(@RequestParam("accountId") UUID accountId){
+        return this.accountService.hasAccount(accountId);
     }
 
     @GetMapping("/getByIban/{accountIban}")

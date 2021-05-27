@@ -21,6 +21,9 @@ public interface AccountRepo extends CrudRepository<Account, UUID> {
     @Query("select case when count(account)> 0 then true else false end from Account account where account.customerId =:customerId")
     boolean hasCustomer(@Param("customerId") UUID customerId);
 
+    @Query("select case when count(account)> 0 then true else false end from Account account where account.accountId =?1")
+    boolean hasAccount(@Param("accountId") UUID accountId);
+
     Optional<Account> findByIban(UUID iban);
-    void deleteAllByCustomerId(UUID customerID);
+    void removeAllByCustomerId(UUID customerID);
 }

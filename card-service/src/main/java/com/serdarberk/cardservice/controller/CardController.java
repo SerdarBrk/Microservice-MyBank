@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Validated
 @RestController
-@RequestMapping("/api/card")
+@RequestMapping("/api/cards")
 public class CardController {
     private final CardService cardService;
 
@@ -25,9 +25,9 @@ public class CardController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CardDto create(@Valid @RequestBody CardDto cardDto){
+
         return this.cardService.create(cardDto.toCard()).toCardDto();
     }
-
     @PostMapping("/shopping")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void shopping(@RequestParam("cardNumber") UUID cardNumber,
@@ -35,14 +35,22 @@ public class CardController {
                                  @RequestParam("money") double money){
         this.cardService.shopping(cardNumber, receiverIban, money);
     }
-
-    @DeleteMapping(params = {"cardNumber"})
+    @DeleteMapping(value = "/deleteAll")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteAll(@RequestParam("customerId") UUID customerId){
+        this.cardService.deleteAll(customerId);
+    }
+    @DeleteMapping(value = "/deleteByAccountId")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteByAccountId(@RequestParam("accountId") UUID accountId){
+        this.cardService.deleteByAccountId(accountId);
+    }
+    @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void delete(@RequestParam("cardNumber") UUID cardNumber){
         this.cardService.delete(cardNumber);
     }
-
-    @GetMapping("/{cardNumber}")
+    @GetMapping("/get/{cardNumber}")
     public CardDto get(@PathVariable("cardNumber") UUID cardNumber){
         return this.cardService.get(cardNumber)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Card not found with number: "+cardNumber))

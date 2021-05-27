@@ -6,3 +6,15 @@ spring:
     name: TRANSFER-SERVICE
   zipkin:
     base-url: http://127.0.0.1:9411/
+
+ribbon:
+  eager-load:
+    enabled: true
+    clients: exchangerates
+  http:
+    client:
+      enabled: true
+exchangerates:
+  ribbon:
+    listOfServers: http://api.exchangeratesapi.io/
+    ServerListRefreshInterval: 15000

@@ -6,13 +6,10 @@ import com.serdarberk.accountservice.entity.Account;
 import com.serdarberk.accountservice.repository.AccountRepo;
 import lombok.extern.slf4j.Slf4j;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -52,11 +49,9 @@ public class AccountService {
     public void sendMoney(UUID accountId,UUID receiverIban,double money){
         log.info("Inside sendMoney of AccountService");
 
-        restTemplate.postForObject("http://TRANSFER-SERVICE/api/service/sendMoneyViaAccount?accountId="+accountId.toString()+
+        restTemplate.postForObject("http://TRANSFER-SERVICE/sendMoneyViaAccount?accountId="+accountId+
                 "&receiverAccountIban="+receiverIban+"&money="+money,null,ResponseEntity.class);
     }
-
-
 
     @Transactional
     public void delete(UUID accountId){
@@ -65,6 +60,7 @@ public class AccountService {
         Account account=this.accountRepo.findById(accountId)
                 .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Account not found with accountId: "+accountId));
+        this.restTemplate.delete("http://CARD-SERVICE/deleteByAccountId?accountId="+accountId);
         if(account.getCurrency() != 0)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"There is money in the account. Account cannot be deleted");
         this.accountRepo.delete(account);
@@ -77,13 +73,18 @@ public class AccountService {
     }
 
     @Transactional
-   public void deleteAll(UUID customerId){
+    public void deleteAll(UUID customerId){
 
-      if(accountRepo.hasCurrency(customerId))
-          throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"There is money in the account. Account cannot be deleted");
-      this.accountRepo.deleteAllByCustomerId(customerId);
-   }
-
+        if(accountRepo.hasCurrency(customerId))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"There is money in the account. Account cannot be deleted");
+        this.accountRepo.removeAllByCustomerId(customerId);
+    }
+    @Transactional
+    public ObjectNode hasAccount(UUID accountId){
+        ObjectNode objectNode=new ObjectNode(JsonNodeFactory.instance);
+        objectNode.put("hasAccount",this.accountRepo.hasAccount(accountId));
+        return objectNode;
+    }
     @Transactional
     public Optional<Account> getByIban(UUID accountId){
         log.info("Inside get of AccountService");

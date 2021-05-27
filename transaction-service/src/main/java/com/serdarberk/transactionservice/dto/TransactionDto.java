@@ -13,12 +13,9 @@ import java.util.UUID;
 @Builder
 public class TransactionDto {
     private int id;
-    @NotBlank(message = "Performedid for the transaction is mandatory")
     private UUID performedId;
     private TransactionType transactionType;
-    @NotBlank(message = "Performedid for the transaction is mandatory")
     private String explanation;
-    @NotBlank(message = "Performedid for the transaction is mandatory")
     private LocalDate transactionDate;
 
     public Transaction toTransaction(){

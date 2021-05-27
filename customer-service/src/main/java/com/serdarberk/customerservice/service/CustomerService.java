@@ -7,6 +7,7 @@ import com.serdarberk.customerservice.repository.CustomerRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
@@ -37,11 +38,9 @@ public class CustomerService {
         log.info("Inside delete of CustomerService");
         Customer customer = this.customerRepo.findById(customerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found with id" + customerId));
-        ObjectNode objectNode = restTemplate.getForObject("http://ACCOUNT-SERVICE/api/accounts/hasCurrency/"+customer.getCustomerId().toString(),
-                ObjectNode.class);
-        if(objectNode.get("hasCurrency").toString().equals("true"))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"customer has amount of money");
-
+        restTemplate.delete("http://ACCOUNT-SERVICE/api/accounts/deleteAll?customerId="+customer.getCustomerId(), ResponseEntity.class);
+        restTemplate.delete("http://CARD-SERVICE/api/cards/deleteAll?customerId="+customer.getCustomerId(), ResponseEntity.class);
+        restTemplate.delete("http://TRANSACTION-SERVICE/api/transactions?performedId="+customer.getCustomerId(), ResponseEntity.class);
         customerRepo.delete(customer);
     }
 
@@ -56,11 +55,12 @@ public class CustomerService {
     public ObjectNode hasCustomer(UUID customerId){
         log.info("Inside hasCustomer of CustomerService");
         ObjectNode objectNode= new ObjectNode(JsonNodeFactory.instance);
-        boolean hasCustomer = customerRepo.hasCustomer(customerId);
-        objectNode.put("hasCustomer",hasCustomer);
+        objectNode.put("hasCustomer",this.customerRepo.hasCustomer(customerId));
+
         return objectNode;
 
     }
+
 
     public Optional<Customer> get(UUID customerId) {
 

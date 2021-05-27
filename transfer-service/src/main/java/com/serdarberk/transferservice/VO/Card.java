@@ -10,5 +10,6 @@ public class Card {
 
     private UUID cardNumber;
     private UUID accountId;
+    private UUID customerId;
 
 }

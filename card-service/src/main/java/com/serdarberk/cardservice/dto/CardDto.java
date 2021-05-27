@@ -9,13 +9,13 @@ import java.util.UUID;
 @Builder
 public class CardDto {
     private UUID cardNumber;
-    @NotBlank(message =  "Account for the card is mandatory")
     private UUID accountId;
-
+    private UUID customerId;
     public Card toCard(){
         return Card.builder()
                 .cardNumber(this.cardNumber)
                 .accountId(this.accountId)
+                .customerId(this.customerId)
                 .build();
     }
 }

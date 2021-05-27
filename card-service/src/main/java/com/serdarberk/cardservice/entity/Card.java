@@ -19,11 +19,12 @@ public class Card {
     @GeneratedValue
     private UUID cardNumber;
     private UUID accountId;
-
+    private UUID customerId;
     public CardDto toCardDto(){
         return CardDto.builder()
                 .cardNumber(this.cardNumber)
                 .accountId(this.accountId)
+                .customerId(this.customerId)
                 .build();
     }
 
